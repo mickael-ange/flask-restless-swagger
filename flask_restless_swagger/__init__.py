@@ -81,13 +81,11 @@ class SwagAPIManager(object):
     def title(self, value):
         self.swagger['info']['title'] = value
 
-    @property
     def description(self):
         if 'description' in self.swagger['info']:
             return self.swagger['info']['description']
         return None
 
-    @description.setter
     def description(self, value):
         self.swagger['info']['description'] = value
 
@@ -252,4 +250,3 @@ class SwagAPIManager(object):
     def swagger_blueprint(self):
 
         return swagger
-   
