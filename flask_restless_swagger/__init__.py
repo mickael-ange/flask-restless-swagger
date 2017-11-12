@@ -65,23 +65,19 @@ class SwagAPIManager(object):
     def __str__(self):
         return self.to_json(indent=4)
 
-    @property
     def version(self):
         if 'version' in self.swagger['info']:
             return self.swagger['info']['version']
         return None
 
-    @version.setter
     def version(self, value):
         self.swagger['info']['version'] = value
 
-    @property
     def title(self):
         if 'title' in self.swagger['info']:
             return self.swagger['info']['title']
         return None
 
-    @title.setter
     def title(self, value):
         self.swagger['info']['title'] = value
 
@@ -193,6 +189,7 @@ class SwagAPIManager(object):
                     self.swagger['paths'][path]['description'] = model.__doc__
 
     def add_defn(self, model, **kwargs):
+        missing_defs = []
         name = model.__name__
         self.swagger['definitions'][name] = {
             'type': 'object',
@@ -209,22 +206,25 @@ class SwagAPIManager(object):
                 column_defn = sqlalchemy_swagger_mapping[column_type]
             except AttributeError:
                 schema = get_related_model(model, column_name)
+                missing_defs.append(schema)
+                
                 if column_name + '_id' in columns:
                     column_defn = {'schema': {
-                        '$ref': schema.__name__
+                        '$ref': "#/definitions/"+schema.__name__
                     }}
                 else:
-                    column_defn = {'schema': {
-                        'type': 'array',
-                        'items': {
-                            '$ref': schema.__name__
-                        }
-                    }}
+                    column_defn = {
+                        '$ref': "#/definitions/"+schema.__name__
+                    }
 
             if column.__doc__:
                 column_defn['description'] = column.__doc__
             self.swagger['definitions'][name]['properties'][column_name] = column_defn
-
+            for miss in missing_defs:
+                if miss.__name__ not in self.swagger['definitions']:
+                    print(miss.__name__)
+                    self.add_defn(miss)
+            
     def init_app(self, app, **kwargs):
         self.app = app
         self.manager = APIManager(self.app, **kwargs)
@@ -252,3 +252,4 @@ class SwagAPIManager(object):
     def swagger_blueprint(self):
 
         return swagger
+   
