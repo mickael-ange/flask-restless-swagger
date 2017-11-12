@@ -220,7 +220,6 @@ class SwagAPIManager(object):
             self.swagger['definitions'][name]['properties'][column_name] = column_defn
             for miss in missing_defs:
                 if miss.__name__ not in self.swagger['definitions']:
-                    print(miss.__name__)
                     self.add_defn(miss)
             
     def init_app(self, app, **kwargs):
