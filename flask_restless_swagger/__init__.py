@@ -8,7 +8,7 @@ except:
     from urllib import parse as urlparse
 
 import json
-
+import re
 import yaml
 from flask import jsonify, request, Blueprint, redirect
 from flask_restless import APIManager
@@ -65,34 +65,38 @@ class SwagAPIManager(object):
     def __str__(self):
         return self.to_json(indent=4)
 
-    def version(self):
+    def get_version(self):
         if 'version' in self.swagger['info']:
             return self.swagger['info']['version']
         return None
 
-    def version(self, value):
+    def set_version(self, value):
         self.swagger['info']['version'] = value
 
-    def title(self):
+    def get_title(self):
         if 'title' in self.swagger['info']:
             return self.swagger['info']['title']
         return None
 
-    def title(self, value):
+    def set_title(self, value):
         self.swagger['info']['title'] = value
 
-    def description(self):
+    def get_description(self):
         if 'description' in self.swagger['info']:
             return self.swagger['info']['description']
         return None
 
-    def description(self, value):
+    def set_description(self, value):
         self.swagger['info']['description'] = value
 
+    def set_basepath(self, value):
+        self.swagger['basePath'] = value
+        
     def add_path(self, model, **kwargs):
         name = model.__tablename__
         schema = model.__name__
         path = kwargs.get('url_prefix', "") + '/' + name
+        path = re.sub(r'^{}'.format(self.swagger['basePath']),'',path)
         id_path = "{0}/{{{1}Id}}".format(path, schema.lower())
         self.swagger['paths'][path] = {}
         self.swagger['tags'].append({'name': schema})
