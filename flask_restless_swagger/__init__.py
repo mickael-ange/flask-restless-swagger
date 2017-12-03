@@ -230,11 +230,16 @@ class SwagAPIManager(object):
         self.manager = APIManager(self.app, **kwargs)
 
         swagger = Blueprint('swagger', __name__, static_folder='static',
-                            static_url_path=self.app.static_url_path + '/swagger', )
-
+                            static_url_path=self.app.static_url_path + '/swagger',
+                            )
+        swaggerui_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/swagger-ui')
+        print(swaggerui_folder)
+        self.app.jinja_loader.searchpath.append(swaggerui_folder)
+        
         @swagger.route('/swagger')
         def swagger_ui():
-            return redirect('/static/swagger/swagger-ui/index.html')
+            return render_template('index.html')
+            # return redirect('/static/swagger/swagger-ui/index.html')
 
         @swagger.route('/swagger.json')
         def swagger_json():
