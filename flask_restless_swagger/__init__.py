@@ -230,7 +230,7 @@ class SwagAPIManager(object):
         self.app = app
         self.manager = APIManager(self.app, **kwargs)
 
-        swagger = Blueprint('swagger', __name__, static_folder='static',
+        swagger = Blueprint('swagger', __name__, static_folder='static/swagger-ui',
                             static_url_path=self.app.static_url_path + '/swagger',
                             )
         swaggerui_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/swagger-ui')
