@@ -140,7 +140,6 @@ class SwagAPIManager(object):
                         200: {
                             'description': 'Success ' + name,
                             'schema': {
-                                'title': name,
                                 '$ref': '#/definitions/' + schema
                             }
                         }
