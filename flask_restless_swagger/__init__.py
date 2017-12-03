@@ -7,6 +7,7 @@ try:
 except:
     from urllib import parse as urlparse
 
+import os
 import json
 import re
 import yaml
