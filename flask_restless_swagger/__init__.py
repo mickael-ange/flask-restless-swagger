@@ -7,10 +7,11 @@ try:
 except:
     from urllib import parse as urlparse
 
+import os
 import json
-
+import re
 import yaml
-from flask import jsonify, request, Blueprint, redirect
+from flask import jsonify, request, Blueprint, redirect, render_template
 from flask_restless import APIManager
 from flask_restless.helpers import *
 
@@ -65,34 +66,38 @@ class SwagAPIManager(object):
     def __str__(self):
         return self.to_json(indent=4)
 
-    def version(self):
+    def get_version(self):
         if 'version' in self.swagger['info']:
             return self.swagger['info']['version']
         return None
 
-    def version(self, value):
+    def set_version(self, value):
         self.swagger['info']['version'] = value
 
-    def title(self):
+    def get_title(self):
         if 'title' in self.swagger['info']:
             return self.swagger['info']['title']
         return None
 
-    def title(self, value):
+    def set_title(self, value):
         self.swagger['info']['title'] = value
 
-    def description(self):
+    def get_description(self):
         if 'description' in self.swagger['info']:
             return self.swagger['info']['description']
         return None
 
-    def description(self, value):
+    def set_description(self, value):
         self.swagger['info']['description'] = value
 
+    def set_basepath(self, value):
+        self.swagger['basePath'] = value
+        
     def add_path(self, model, **kwargs):
         name = model.__tablename__
         schema = model.__name__
         path = kwargs.get('url_prefix', "") + '/' + name
+        path = re.sub(r'^{}'.format(self.swagger['basePath']),'',path)
         id_path = "{0}/{{{1}Id}}".format(path, schema.lower())
         self.swagger['paths'][path] = {}
         self.swagger['tags'].append({'name': schema})
@@ -120,7 +125,7 @@ class SwagAPIManager(object):
                 }
 
                 if model.__doc__:
-                    self.swagger['paths'][path]['description'] = model.__doc__
+                    self.swagger['paths'][path][method]['description'] = model.__doc__
                 if id_path not in self.swagger['paths']:
                     self.swagger['paths'][id_path] = {}
                 self.swagger['paths'][id_path][method] = {
@@ -136,7 +141,6 @@ class SwagAPIManager(object):
                         200: {
                             'description': 'Success ' + name,
                             'schema': {
-                                'title': name,
                                 '$ref': '#/definitions/' + schema
                             }
                         }
@@ -144,7 +148,7 @@ class SwagAPIManager(object):
                     }
                 }
                 if model.__doc__:
-                    self.swagger['paths'][id_path]['description'] = model.__doc__
+                    self.swagger['paths'][id_path][method]['description'] = model.__doc__
             elif method == 'delete':
                 if id_path not in self.swagger['paths']:
                     self.swagger['paths'][id_path] = {}
@@ -165,7 +169,7 @@ class SwagAPIManager(object):
                     }
                 }
                 if model.__doc__:
-                    self.swagger['paths'][id_path]['description'] = model.__doc__
+                    self.swagger['paths'][id_path][method]['description'] = model.__doc__
             else:
                 self.swagger['paths'][path][method] = {
                     'tags': [schema],
@@ -184,7 +188,7 @@ class SwagAPIManager(object):
                     }
                 }
                 if model.__doc__:
-                    self.swagger['paths'][path]['description'] = model.__doc__
+                    self.swagger['paths'][path][method]['description'] = model.__doc__
 
     def add_defn(self, model, **kwargs):
         missing_defs = []
@@ -226,12 +230,17 @@ class SwagAPIManager(object):
         self.app = app
         self.manager = APIManager(self.app, **kwargs)
 
-        swagger = Blueprint('swagger', __name__, static_folder='static',
-                            static_url_path=self.app.static_url_path + '/swagger', )
-
+        swagger = Blueprint('swagger', __name__, static_folder='static/swagger-ui',
+                            static_url_path=self.app.static_url_path + '/swagger',
+                            )
+        swaggerui_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/swagger-ui')
+        print(swaggerui_folder)
+        self.app.jinja_loader.searchpath.append(swaggerui_folder)
+        
         @swagger.route('/swagger')
         def swagger_ui():
-            return redirect('/static/swagger/swagger-ui/index.html')
+            return render_template('index.html')
+            # return redirect('/static/swagger/swagger-ui/index.html')
 
         @swagger.route('/swagger.json')
         def swagger_json():
