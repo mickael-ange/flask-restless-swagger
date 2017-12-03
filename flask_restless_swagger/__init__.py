@@ -11,7 +11,7 @@ import os
 import json
 import re
 import yaml
-from flask import jsonify, request, Blueprint, redirect
+from flask import jsonify, request, Blueprint, redirect, render_template
 from flask_restless import APIManager
 from flask_restless.helpers import *
 
