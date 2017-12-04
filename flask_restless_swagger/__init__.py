@@ -170,6 +170,32 @@ class SwagAPIManager(object):
                 }
                 if model.__doc__:
                     self.swagger['paths'][id_path][method]['description'] = model.__doc__
+            elif (method == 'patch') or (method == 'put'):
+                self.swagger['paths']["{0}/{{{1}Id}}".format(path, schema.lower())][method] = {
+                    'tags': [schema],
+                    'parameters': [{
+                        'name': schema.lower() + 'Id',
+                        'in': 'path',
+                        'description': 'ID of ' + schema,
+                        'required': True,
+                        'type': 'integer'
+                    },
+                    {
+                        'name': name,
+                        'in': 'body',
+                        'description': schema,
+                        'required': True,
+                        'schema': {"$ref": "#/definitions/" + schema}
+                    }],
+                    'responses': {
+                        200: {
+                            'description': 'Success'
+                        }
+
+                    }
+                }
+                if model.__doc__:
+                    self.swagger['paths'][path][method]['description'] = model.__doc__
             else:
                 self.swagger['paths'][path][method] = {
                     'tags': [schema],
