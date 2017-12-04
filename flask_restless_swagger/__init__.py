@@ -49,7 +49,7 @@ class SwagAPIManager(object):
         'definitions': {},
         'tags': [],
         'securityDefinitions': {},
-        'security': {}
+        'security': []
     }
 
     def __init__(self, app=None, **kwargs):
@@ -99,9 +99,9 @@ class SwagAPIManager(object):
         self.swagger['securityDefinitions'] = {"api_key": {"type": "apiKey",
                                                    "name": name,
                                                    "in": location}}
-        self.swagger['security'] = {
+        self.swagger['security'] = [{
                                       "api_key": []
-                                    }
+                                    }]
     
     def set_schemes(self, schemes=['https']):
         self.swagger['schemes'] = schemes
