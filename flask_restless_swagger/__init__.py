@@ -102,6 +102,9 @@ class SwagAPIManager(object):
         self.swagger['security'] = {
                                       "api_key": []
                                     }
+    
+    def (self, schemes=['https']):
+        self.swagger['schemes'] = schemes
         
     def add_path(self, model, **kwargs):
         name = model.__tablename__
