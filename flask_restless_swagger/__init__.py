@@ -47,7 +47,9 @@ class SwagAPIManager(object):
         'produces': ['application/json'],
         'paths': {},
         'definitions': {},
-        'tags': []
+        'tags': [],
+        'securityDefinitions': {},
+        'security': {}
     }
 
     def __init__(self, app=None, **kwargs):
@@ -92,6 +94,14 @@ class SwagAPIManager(object):
 
     def set_basepath(self, value):
         self.swagger['basePath'] = value
+        
+    def set_security_def_api(self, name="Authentication-Token", location="header"):
+        self.swagger['securityDefinitions'] = {"api_key": {"type": "apiKey",
+                                                   "name": name,
+                                                   "in": location}}
+        self.swagger['security'] = {
+                                      "api_key": []
+                                    }
         
     def add_path(self, model, **kwargs):
         name = model.__tablename__
