@@ -152,7 +152,7 @@ class SwagAPIManager(object):
             elif method == 'delete':
                 if id_path not in self.swagger['paths']:
                     self.swagger['paths'][id_path] = {}
-                self.swagger['paths']["{0}/{{{1}Id}}".format(path, schema.lower())][method] = {
+                self.swagger['paths'][id_path][method] = {
                     'tags': [schema],
                     'parameters': [{
                         'name': schema.lower() + 'Id',
@@ -173,7 +173,7 @@ class SwagAPIManager(object):
             elif (method == 'patch') or (method == 'put'):
                 if id_path not in self.swagger['paths']:
                     self.swagger['paths'][id_path] = {}
-                self.swagger['paths']["{0}/{{{1}Id}}".format(path, schema.lower())][method] = {
+                self.swagger['paths'][id_path][method] = {
                     'tags': [schema],
                     'parameters': [{
                         'name': schema.lower() + 'Id',
@@ -197,7 +197,7 @@ class SwagAPIManager(object):
                     }
                 }
                 if model.__doc__:
-                    self.swagger['paths'][path][id_path][method]['description'] = model.__doc__
+                    self.swagger['paths'][id_path][method]['description'] = model.__doc__
             else:
                 self.swagger['paths'][path][method] = {
                     'tags': [schema],
