@@ -103,7 +103,7 @@ class SwagAPIManager(object):
                                       "api_key": []
                                     }
     
-    def (self, schemes=['https']):
+    def set_schemes(self, schemes=['https']):
         self.swagger['schemes'] = schemes
         
     def add_path(self, model, **kwargs):
