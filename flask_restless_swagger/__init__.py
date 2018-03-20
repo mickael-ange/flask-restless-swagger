@@ -135,7 +135,8 @@ class SwagAPIManager(object):
                         'in': 'path',
                         'description': 'ID of ' + schema,
                         'required': True,
-                        'type': 'integer'
+                        'type': 'integer',
+                        'format': 'int64'
                     }],
                     'responses': {
                         200: {
@@ -159,7 +160,8 @@ class SwagAPIManager(object):
                         'in': 'path',
                         'description': 'ID of ' + schema,
                         'required': True,
-                        'type': 'integer'
+                        'type': 'integer',
+                        'format': 'int64'
                     }],
                     'responses': {
                         200: {
