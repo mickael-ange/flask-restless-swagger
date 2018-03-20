@@ -102,6 +102,9 @@ class SwagAPIManager(object):
         self.swagger['paths'][path] = {}
         self.swagger['tags'].append({'name': schema})
         for method in [m.lower() for m in kwargs.get('methods', ['GET'])]:
+
+            # GET
+
             if method == 'get':
                 self.swagger['paths'][path][method] = {
                     'tags': [schema],
@@ -120,7 +123,6 @@ class SwagAPIManager(object):
                                 'items': {'$ref': '#/definitions/' + schema}
                             }
                         }
-
                     }
                 }
 
@@ -145,15 +147,17 @@ class SwagAPIManager(object):
                                 '$ref': '#/definitions/' + schema
                             }
                         }
-
                     }
                 }
                 if model.__doc__:
                     self.swagger['paths'][id_path][method]['description'] = model.__doc__
+
+            # DELETE
+
             elif method == 'delete':
                 if id_path not in self.swagger['paths']:
                     self.swagger['paths'][id_path] = {}
-                self.swagger['paths']["{0}/{{{1}Id}}".format(path, schema.lower())][method] = {
+                self.swagger['paths'][id_path][method] = {
                     'tags': [schema],
                     'parameters': [{
                         'name': schema.lower() + 'Id',
@@ -167,11 +171,41 @@ class SwagAPIManager(object):
                         200: {
                             'description': 'Success'
                         }
-
                     }
                 }
                 if model.__doc__:
                     self.swagger['paths'][id_path][method]['description'] = model.__doc__
+
+            # PATCH or PUT
+
+            elif method == 'patch' or method == 'put':
+                if id_path not in self.swagger['paths']:
+                    self.swagger['paths'][id_path] = {}
+                self.swagger['paths'][id_path][method] = {
+                    'tags': [schema],
+                    'parameters': [{
+                        'name': schema.lower() + 'Id',
+                        'in': 'path',
+                        'description': 'ID of ' + schema,
+                        'required': True,
+                        'type': 'integer',
+                        'format': 'int64'
+                    },
+                    {
+                        'name': name,
+                        'in': 'body',
+                        'description': schema,
+                        'required': True,
+                        'schema': {"$ref": "#/definitions/" + schema}
+                    }],
+                    'responses': {
+                        200: {
+                            'description': 'Success'
+                        }
+                    }
+                }
+
+            # POST and others
             else:
                 self.swagger['paths'][path][method] = {
                     'tags': [schema],
