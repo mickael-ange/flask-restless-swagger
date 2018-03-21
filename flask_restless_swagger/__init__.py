@@ -204,6 +204,8 @@ class SwagAPIManager(object):
                         }
                     }
                 }
+                if model.__doc__:
+                    self.swagger['paths'][id_path][method]['description'] = model.__doc__
 
             # POST and others
             else:
