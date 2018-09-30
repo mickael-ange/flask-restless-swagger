@@ -1,6 +1,6 @@
 __author__ = 'Michael Messmore'
 __email__ = 'mike@messmore.org'
-__version__ = '0.2.0'
+__version__ = '0.0.3.3'
 
 try:
     import urlparse
@@ -34,6 +34,7 @@ sqlalchemy_swagger_mapping = {
     'BIGINT': {'format': 'int64', 'type': 'integer'},
     'ENUM': {'format': 'string', 'type': 'string'},
     'INTERVAL': {'format': 'date-time', 'type': 'string'},
+    'geometry': {'format': 'string', 'type': 'string'},
 }
 
 
