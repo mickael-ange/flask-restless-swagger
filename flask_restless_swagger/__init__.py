@@ -15,6 +15,8 @@ from flask import jsonify, request, Blueprint, redirect, render_template
 from flask_restless import APIManager
 from flask_restless.helpers import *
 
+sqlalchemy_swagger_default_mapping = {'format': 'string', 'type': 'string'}
+
 sqlalchemy_swagger_mapping = {
     'INTEGER': {'format': 'int32', 'type': 'integer'},
     'SMALLINT': {'format': 'int32', 'type': 'integer'},
@@ -244,7 +246,7 @@ class SwagAPIManager(object):
                 column_type = str(column.type)
                 if '(' in column_type:
                     column_type = column_type.split('(')[0]
-                column_defn = sqlalchemy_swagger_mapping[column_type]
+                column_defn = sqlalchemy_swagger_mapping.get(column_type, sqlalchemy_swagger_default_mapping)
             except AttributeError:
                 schema = get_related_model(model, column_name)
                 missing_defs.append(schema)
