@@ -23,7 +23,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='flask-restless-swagger-2',
-    version='0.0.3.4',
+    version='0.0.3.5',
     description='Magically create swagger documentation as you magically create your RESTful API',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Lucas Simonelli',
