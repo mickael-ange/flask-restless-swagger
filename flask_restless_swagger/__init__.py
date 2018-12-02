@@ -243,7 +243,10 @@ class SwagAPIManager(object):
             if column_name in kwargs.get('exclude_columns', []):
                 continue
             try:
-                column_type = str(column.type)
+                if hasattr(column, 'type'):
+                    column_type = str(column.type)
+                else:
+                    column_type = 'TEXT'
                 if '(' in column_type:
                     column_type = column_type.split('(')[0]
                 column_defn = sqlalchemy_swagger_mapping.get(column_type, sqlalchemy_swagger_default_mapping)
